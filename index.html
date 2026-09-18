@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111827">
+<title>Controle Motorista Pro</title>
+<style>
+:root{--bg:#f3f4f6;--card:#fff;--text:#111827;--muted:#6b7280;--line:#e5e7eb;--dark:#111827;--green:#087f5b;--red:#c92a2a}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,Arial,sans-serif;padding-bottom:78px}
+header{background:var(--dark);color:#fff;padding:22px 18px 20px;border-radius:0 0 24px 24px}
+.headerrow{display:flex;justify-content:space-between;align-items:center}.brand{font-size:22px;font-weight:800}.subtitle{font-size:12px;opacity:.65;margin-top:4px}
+.container{max-width:720px;margin:auto;padding:14px}.period{margin:4px 0 14px;color:var(--muted);font-size:13px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.card{background:var(--card);border:1px solid #eee;border-radius:16px;padding:15px;margin-bottom:11px;box-shadow:0 3px 12px #00000009}
+.hero{background:var(--dark);color:white;border:0}.hero .muted{color:#c7cbd1}.label{font-size:12px;color:var(--muted)}.hero .label{color:#c7cbd1}.value{font-size:25px;font-weight:800;margin-top:5px}.smallvalue{font-size:19px;font-weight:800;margin-top:5px}.green{color:var(--green)}.red{color:var(--red)}
+.hero .green{color:#8ce2bd}.hero .red{color:#ffaaa8}
+.sectiontitle{font-size:16px;font-weight:800;margin:3px 0 12px}.row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}.row:last-child{border:0}
+.bar{height:9px;background:#e5e7eb;border-radius:20px;overflow:hidden;margin-top:9px}.fill{height:100%;background:#111827;border-radius:20px}
+nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);display:flex;z-index:10;padding-bottom:env(safe-area-inset-bottom)}nav button{flex:1;background:white;border:0;padding:9px 3px 8px;color:#6b7280;font-size:10px;font-weight:700}nav button span{display:block;font-size:20px;margin-bottom:2px}nav button.active{color:#111827}
+section{display:none}.activeSection{display:block}
+input,select{width:100%;padding:12px;border:1px solid #d1d5db;border-radius:11px;margin:6px 0 12px;font-size:16px;background:white}label{font-size:12px;color:var(--muted);font-weight:700}
+.btn{width:100%;border:0;border-radius:12px;padding:13px;background:var(--dark);color:#fff;font-weight:800;font-size:15px}.btn.secondary{background:#e5e7eb;color:#111827}.btn.danger{background:#fee2e2;color:#991b1b}.two{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.pill{display:inline-block;padding:5px 8px;border-radius:20px;background:#f0f1f3;font-size:11px;font-weight:700}.empty{color:var(--muted);font-size:13px;padding:8px 0}
+canvas{width:100%;height:170px}.legend{display:flex;gap:14px;font-size:11px;color:var(--muted);margin-top:6px}.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#111827;margin-right:4px}
+</style>
+
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#111827">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+
+</head>
+<body>
+<header><div class="headerrow"><div><div class="brand">🚗 Controle Motorista</div><div class="subtitle">Seu trabalho, seus números.</div></div><div>⚡</div></div></header>
+
+<div class="container">
+<section id="dashboard" class="activeSection">
+<div class="period" id="period"></div>
+<div class="card hero"><div class="label">Lucro líquido</div><div class="value" id="dashLucro">R$ 0,00</div><div class="two" style="margin-top:16px"><div><div class="label">Faturamento</div><div class="smallvalue" id="dashFat">R$ 0,00</div></div><div><div class="label">Gastos</div><div class="smallvalue red" id="dashExp">R$ 0,00</div></div></div></div>
+<div class="grid">
+<div class="card"><div class="label">Km rodados</div><div class="smallvalue" id="dashKm">0</div></div>
+<div class="card"><div class="label">Lucro / km</div><div class="smallvalue" id="dashLkm">R$ 0,00</div></div>
+<div class="card"><div class="label">Ganho / hora</div><div class="smallvalue" id="dashHour">R$ 0,00</div></div>
+<div class="card"><div class="label">Recarga</div><div class="smallvalue" id="dashCharge">R$ 0,00</div></div>
+</div>
+<div class="card"><div class="sectiontitle">🎯 Meta mensal</div><div class="row"><span id="goalText">Defina sua meta</span><b id="goalPct">0%</b></div><div class="bar"><div class="fill" id="goalBar" style="width:0%"></div></div><div class="muted" id="goalRemain" style="font-size:12px;margin-top:8px"></div></div>
+<div class="card"><div class="sectiontitle">Plataformas</div><div class="row"><span>Uber</span><b id="dUber">R$ 0,00</b></div><div class="row"><span>99</span><b id="d99">R$ 0,00</b></div><div class="row"><span>Outras</span><b id="dOther">R$ 0,00</b></div></div>
+<div class="card"><div class="sectiontitle">Últimos lançamentos</div><div id="recent"></div></div>
+</section>
+
+<section id="earnings">
+<div class="card"><div class="sectiontitle">➕ Registrar ganho</div>
+<label>Data</label><input id="gDate" type="date"><label>Plataforma</label><select id="gPlatform"><option>Uber</option><option>99</option><option>Particular</option><option>Outras</option></select>
+<label>Valor recebido</label><input id="gValue" type="number" step="0.01" placeholder="0,00"><div class="two"><div><label>Km</label><input id="gKm" type="number" step="0.1" placeholder="0"></div><div><label>Horas</label><input id="gHours" type="number" step="0.1" placeholder="0"></div></div><button class="btn" onclick="addGain()">Salvar ganho</button></div>
+<div class="card"><div class="sectiontitle">Histórico de ganhos</div><div id="gainHistory"></div></div>
+</section>
+
+<section id="expenses">
+<div class="card"><div class="sectiontitle">➕ Registrar gasto</div><label>Data</label><input id="eDate" type="date"><label>Categoria</label><select id="eCat"><option>Recarga elétrica</option><option>Manutenção</option><option>Seguro</option><option>IPVA</option><option>Parcela do carro</option><option>Lavagem</option><option>Pedágio</option><option>Estacionamento</option><option>Alimentação</option><option>Pneus</option><option>Outros</option></select><label>Valor</label><input id="eValue" type="number" step="0.01" placeholder="0,00"><label>Descrição</label><input id="eDesc" placeholder="Ex.: recarga no prédio"><button class="btn" onclick="addExpense()">Salvar gasto</button></div>
+<div class="card"><div class="sectiontitle">Histórico de gastos</div><div id="expenseHistory"></div></div>
+</section>
+
+<section id="car">
+<div class="card"><div class="sectiontitle">⚡ Meu carro</div><label>Modelo</label><input id="carModel" placeholder="Ex.: GAC Aion UT"><label>Km atual</label><input id="carOdo" type="number" placeholder="0"><label>Preço médio da energia (R$/kWh)</label><input id="energyPrice" type="number" step="0.01" placeholder="0,92"><label>Consumo médio (kWh/100 km)</label><input id="energyConsumption" type="number" step="0.1" placeholder="15"><button class="btn" onclick="saveCar()">Salvar dados do carro</button></div>
+<div class="card"><div class="sectiontitle">Custo estimado</div><div class="row"><span>Custo energético / km</span><b id="energyKm">R$ 0,00</b></div><div class="row"><span>Custo energético / 100 km</span><b id="energy100">R$ 0,00</b></div></div>
+</section>
+
+<section id="goals">
+<div class="card"><div class="sectiontitle">🎯 Metas</div><label>Meta de faturamento mensal</label><input id="goalInput" type="number" step="0.01" placeholder="6000"><label>Meta de km por mês</label><input id="kmGoal" type="number" placeholder="4000"><button class="btn" onclick="saveGoals()">Salvar metas</button></div>
+<div class="card"><div class="sectiontitle">Progresso</div><div class="row"><span>Faturamento</span><b id="goalFat2">0%</b></div><div class="bar"><div class="fill" id="goalBar2" style="width:0%"></div></div><div class="row"><span>Km</span><b id="goalKm2">0%</b></div><div class="bar"><div class="fill" id="goalKmBar" style="width:0%"></div></div></div>
+</section>
+
+<section id="reports">
+<div class="card"><div class="sectiontitle">📊 Relatório mensal</div><canvas id="chart"></canvas><div class="legend"><span><i class="dot"></i>Faturamento</span><span><i class="dot"></i>Gastos</span><span><i class="dot"></i>Lucro</span></div></div>
+<div class="card"><div class="sectiontitle">Resumo financeiro</div><div class="row"><span>Faturamento</span><b id="rFat">R$ 0,00</b></div><div class="row"><span>Gastos</span><b class="red" id="rExp">R$ 0,00</b></div><div class="row"><span>Lucro líquido</span><b class="green" id="rProfit">R$ 0,00</b></div><div class="row"><span>Total de horas</span><b id="rHours">0 h</b></div><div class="row"><span>Total de km</span><b id="rKm">0 km</b></div></div>
+</section>
+</div>
+
+<nav>
+<button class="active" onclick="tab('dashboard',this)"><span>⌂</span>Início</button>
+<button onclick="tab('earnings',this)"><span>💰</span>Ganhos</button>
+<button onclick="tab('expenses',this)"><span>💳</span>Gastos</button>
+<button onclick="tab('car',this)"><span>🚙</span>Carro</button>
+<button onclick="tab('goals',this)"><span>🎯</span>Metas</button>
+<button onclick="tab('reports',this)"><span>📊</span>Relatórios</button>
+</nav>
+
+<script>
+const KEY='controleMotoristaProV2';
+let db=JSON.parse(localStorage.getItem(KEY)||'{"gains":[],"expenses":[],"car":{"model":"","odo":0,"energyPrice":0.92,"consumption":15},"goals":{"fat":6000,"km":4000}}');
+const $=id=>document.getElementById(id), brl=n=>(+n||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'}), today=new Date().toISOString().slice(0,10);
+$('gDate').value=today;$('eDate').value=today;
+function persist(){localStorage.setItem(KEY,JSON.stringify(db));render()}
+function tab(id,btn){document.querySelectorAll('section').forEach(x=>x.classList.remove('activeSection'));$(id).classList.add('activeSection');document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));btn.classList.add('active');if(id==='reports')drawChart()}
+function addGain(){let v=+$('gValue').value||0;if(!v)return alert('Informe o valor do ganho.');db.gains.unshift({id:Date.now(),date:$('gDate').value||today,platform:$('gPlatform').value,value:v,km:+$('gKm').value||0,h:+$('gHours').value||0});$('gValue').value=$('gKm').value=$('gHours').value='';persist()}
+function addExpense(){let v=+$('eValue').value||0;if(!v)return alert('Informe o valor do gasto.');db.expenses.unshift({id:Date.now(),date:$('eDate').value||today,cat:$('eCat').value,value:v,desc:$('eDesc').value});$('eValue').value=$('eDesc').value='';persist()}
+function delGain(id){db.gains=db.gains.filter(x=>x.id!==id);persist()}function delExp(id){db.expenses=db.expenses.filter(x=>x.id!==id);persist()}
+function monthData(){let m=today.slice(0,7);let g=db.gains.filter(x=>x.date.startsWith(m)),e=db.expenses.filter(x=>x.date.startsWith(m));return {g,e,f:g.reduce((a,x)=>a+x.value,0),ex:e.reduce((a,x)=>a+x.value,0),km:g.reduce((a,x)=>a+x.km,0),h:g.reduce((a,x)=>a+x.h,0)}}
+function saveCar(){db.car={model:$('carModel').value,odo:+$('carOdo').value||0,energyPrice:+$('energyPrice').value||0.92,consumption:+$('energyConsumption').value||15};persist()}
+function saveGoals(){db.goals={fat:+$('goalInput').value||6000,km:+$('kmGoal').value||4000};persist()}
+function render(){
+let d=monthData(),profit=d.f-d.ex;
+$('period').textContent='Resumo de '+new Date().toLocaleDateString('pt-BR',{month:'long',year:'numeric'});
+$('dashFat').textContent=brl(d.f);$('dashExp').textContent=brl(d.ex);$('dashLucro').textContent=brl(profit);$('dashKm').textContent=d.km.toLocaleString('pt-BR');$('dashLkm').textContent=brl(d.km?profit/d.km:0);$('dashHour').textContent=brl(d.h?profit/d.h:0);
+let charge=d.e.filter(x=>x.cat==='Recarga elétrica').reduce((a,x)=>a+x.value,0);$('dashCharge').textContent=brl(charge);
+['Uber','99','Particular','Outras'].forEach(p=>{let v=d.g.filter(x=>x.platform===p).reduce((a,x)=>a+x.value,0);let id=p==='Uber'?'dUber':p==='99'?'d99':'dOther';if(p==='Particular')return;$(id).textContent=brl(v)});
+let pct=Math.min(100,d.f/(db.goals.fat||1)*100);$('goalText').textContent='Meta: '+brl(db.goals.fat);$('goalPct').textContent=pct.toFixed(0)+'%';$('goalBar').style.width=pct+'%';$('goalRemain').textContent=d.f>=db.goals.fat?'Meta atingida!':'Faltam '+brl(db.goals.fat-d.f)+' para a meta';
+$('goalFat2').textContent=pct.toFixed(0)+'%';$('goalBar2').style.width=pct+'%';let kp=Math.min(100,d.km/(db.goals.km||1)*100);$('goalKm2').textContent=kp.toFixed(0)+'%';$('goalKmBar').style.width=kp+'%';
+$('rFat').textContent=brl(d.f);$('rExp').textContent=brl(d.ex);$('rProfit').textContent=brl(profit);$('rHours').textContent=d.h.toFixed(1)+' h';$('rKm').textContent=d.km.toLocaleString('pt-BR')+' km';
+$('carModel').value=db.car.model;$('carOdo').value=db.car.odo;$('energyPrice').value=db.car.energyPrice;$('energyConsumption').value=db.car.consumption;$('goalInput').value=db.goals.fat;$('kmGoal').value=db.goals.km;
+let ek=(db.car.energyPrice*db.car.consumption/100);$('energyKm').textContent=brl(ek);$('energy100').textContent=brl(ek*100);
+let all=[...db.gains.map(x=>({date:x.date,text:x.platform,value:x.value,kind:'gain'})),...db.expenses.map(x=>({date:x.date,text:x.cat,value:x.value,kind:'exp'}))].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5);
+$('recent').innerHTML=all.length?all.map(x=>`<div class="row"><span>${x.text}<br><small class="muted">${x.date.split('-').reverse().join('/')}</small></span><b class="${x.kind==='gain'?'green':'red'}">${x.kind==='gain'?'+':'-'} ${brl(x.value)}</b></div>`).join(''):'<div class="empty">Nenhum lançamento ainda.</div>';
+$('gainHistory').innerHTML=db.gains.length?db.gains.slice(0,30).map(x=>`<div class="row"><span>${x.platform} <span class="pill">${x.date.split('-').reverse().join('/')}</span><br><small class="muted">${x.km} km · ${x.h} h</small></span><span><b class="green">${brl(x.value)}</b> <button onclick="delGain(${x.id})">×</button></span></div>`).join(''):'<div class="empty">Nenhum ganho registrado.</div>';
+$('expenseHistory').innerHTML=db.expenses.length?db.expenses.slice(0,30).map(x=>`<div class="row"><span>${x.cat}<br><small class="muted">${x.desc||''} · ${x.date.split('-').reverse().join('/')}</small></span><span><b class="red">${brl(x.value)}</b> <button onclick="delExp(${x.id})">×</button></span></div>`).join(''):'<div class="empty">Nenhum gasto registrado.</div>';
+}
+function drawChart(){let c=$('chart'),ctx=c.getContext('2d'),w=c.clientWidth*2,h=340;c.width=w;c.height=h;ctx.clearRect(0,0,w,h);let d=monthData(),vals=[d.f,d.ex,Math.max(0,d.f-d.ex)],max=Math.max(...vals,1),names=['Faturamento','Gastos','Lucro'];ctx.font='bold 22px Arial';vals.forEach((v,i)=>{let x=30+i*(w-60)/3,bar=220*v/max;ctx.fillStyle='#111827';ctx.fillRect(x,h-55-bar,70,bar);ctx.fillStyle='#374151';ctx.font='bold 20px Arial';ctx.fillText(brl(v),x,h-65-bar);ctx.font='18px Arial';ctx.fillText(names[i],x,h-25)})}
+render();
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  });
+}
+</script>
+
+</body></html>
